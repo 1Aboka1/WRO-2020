@@ -1,5 +1,3 @@
-#pragma config(Sensor, S3, HTIRS2, sensorI2CCustom)
-#pragma config(Sensor, S2, , sensorHiTechnicIRSeeker1200)
 #pragma config(Sensor, S4,     ,               sensorEV3_Ultrasonic)
 #pragma config(Motor,  motorA,           ,             tmotorEV3_Medium, openLoop, encoder)
 #pragma config(Motor,  motorB,           ,             tmotorEV3_Medium, openLoop, encoder)
@@ -22,27 +20,57 @@ void OmniDrive(int side, int frontback, int turn){
 // This function returns a value for motors to direct ahead
 int FrontCalibrate(){
 	readSensor(&compass);
-	//displayTextLine(2, "%4d", compass.relativeHeading);
 	return compass.relativeHeading * (-5);
 }
 
 //This procedure directs robot to a startPosition that is right before a centre of field
 void startPosition(){
 	time1[T1] = 0;
-	while(time1[T1] < 600)
-		OmniDrive(FrontCalibrate(), -100, 0);
+	while(time1[T1] < 600){
+		readSensor(&irSeeker);
+		OmniDrive(FrontCalibrate(), -1000, 0);
+	}
 	time1[T1] = 0;
-	while(time1[T1] < 4000 && getUSDistance(S4) != 255 && irSeeker.dcDirection == 0)
-		OmniDrive(FrontCalibrate(), 0, -100);
+	while(time1[T1] < 4000 && getUSDistance(S4) != 255 && irSeeker.dcDirection == 0){
+		readSensor(&irSeeker);
+		OmniDrive(FrontCalibrate(), 0, -1000);
+	}
 	time1[T1] = 0;
-	while(time1[T1] < 3500 && irSeeker.dcDirection == 0)
-		OmniDrive(FrontCalibrate(), -100, 0);
+	while(time1[T1] < 3500 && irSeeker.dcDirection == 0){
+		readSensor(&irSeeker);
+		OmniDrive(FrontCalibrate(), -1000, 0);
+	}
 	time1[T1] = 0;
-	while(time1[T1] < 2000 && irSeeker.dcDirection == 0)
+	while(time1[T1] < 2000 && irSeeker.dcDirection == 0){
+		readSensor(&irSeeker);
 		OmniDrive(FrontCalibrate(), 100, 70);
+	}
 	OmniDrive(0, 0, 0);
-	while(irSeeker.dcDirection == 0)
+	while(irSeeker.dcDirection == 0){
+		readSensor(&irSeeker);
 		continue;
+	}
+}
+
+void wallCalibrate(){
+	if(getUSDistance(S4) > 0 && getUSDistance(S4) < 65){
+		while(getUSDistance(S4) > 0 && getUSDistance(S4) < 65 && irSeeker.dcDirection == 5){
+			readSensor(&irSeeker);
+			OmniDrive(FrontCalibrate(), 100, 80);
+		}
+	}
+	else if(getUSDistance(S4) < 255 && getUSDistance(S4) > 115){
+		while(getUSDistance(S4) < 255 && getUSDistance(S4) > 115 && irSeeker.dcDirection == 5){
+			readSensor(&irSeeker);
+			OmniDrive(FrontCalibrate(), 100, -80);
+		}
+	}
+	else{
+		while(irSeeker.dcDirection == 5){
+			readSensor(&irSeeker);
+			OmniDrive(FrontCalibrate(), 1000, 0);
+		}
+	}
 }
 
 task main()
@@ -58,35 +86,336 @@ task main()
 		int irDir = irSeeker.dcDirection;
 		switch(irDir){
 		case 1:
-			OmniDrive(FrontCalibrate(), -100, 0);
+			OmniDrive(FrontCalibrate(), -1000, 0);
 			break;
 		case 2:
-			OmniDrive(FrontCalibrate(), -100, 0);
+			OmniDrive(FrontCalibrate(), -1000, 0);
 			break;
 		case 3:
-			OmniDrive(FrontCalibrate(), 0, 100);
+			OmniDrive(FrontCalibrate(), 0, 1000);
 			break;
 		case 4:
-			OmniDrive(FrontCalibrate(), 0, 100);
+			OmniDrive(FrontCalibrate(), 0, 1000);
 			break;
 		case 5:
-			OmniDrive(FrontCalibrate(), 100, 0);
+			wallCalibrate();
 			break;
 		case 6:
-			OmniDrive(FrontCalibrate(), 0, -100);
+			OmniDrive(FrontCalibrate(), 0, -1000);
 			break;
 		case 7:
-			OmniDrive(FrontCalibrate(), 0, -100);
+			OmniDrive(FrontCalibrate(), 0, -1000);
 			break;
 		case 8:
-			OmniDrive(FrontCalibrate(), -100, 0);
+			OmniDrive(FrontCalibrate(), -1000, 0);
 			break;
 		case 9:
-			OmniDrive(FrontCalibrate(), -100, 0);
+			OmniDrive(FrontCalibrate(), -1000, 0);
 			break;
 		default:
-			OmniDrive(FrontCalibrate(), -100, 0);
+			startPosition();
 			break;
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//This code and this project is a private property of Жайров Абулхаир 29.08.2005
+//Made by 1AbokA1
