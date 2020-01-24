@@ -16,17 +16,14 @@ tHTIRS2 irSeeker;
 void OmniDrive(int side, int frontback, int turn){
 	setMotorSpeed(motorC, (frontback - side) + turn);
 	setMotorSpeed(motorB, ((frontback - side) - turn) - frontback);
-	setMotorSpeed(motorA, -1 * (frontback + side) - turn);
+	setMotorSpeed(motorA, ((frontback + side) - turn) * (-1));
 }
 
 // This function returns a value for motors to direct ahead
 int FrontCalibrate(){
 	readSensor(&compass);
-	string s = compass.relativeHeading;
-	if(atoi(s) + 43 == 1 || atoi(s) + 43 == -1){
-		return 0;
-	}
-	return (atoi(s) + 43) * 4;
+	//displayTextLine(2, "%4d", compass.relativeHeading);
+	return compass.relativeHeading * (-5);
 }
 
 //This procedure directs robot to a startPosition that is right before a centre of field
@@ -52,11 +49,14 @@ task main()
 {
 	initSensor(&irSeeker, S3);
 	initSensor(&compass, S1);
-	compass.offset = compass.heading;
+	compass.offset = 310;
 
 	//Main loop
 	while(true){
-		switch(irSeeker.dcDirection){
+		readSensor(&irSeeker);
+		readSensor(&compass);
+		int irDir = irSeeker.dcDirection;
+		switch(irDir){
 		case 1:
 			OmniDrive(FrontCalibrate(), -100, 0);
 			break;
@@ -84,8 +84,9 @@ task main()
 		case 9:
 			OmniDrive(FrontCalibrate(), -100, 0);
 			break;
-		case 0:
-			startPosition();
+		default:
+			OmniDrive(FrontCalibrate(), -100, 0);
+			break;
 		}
 	}
 }
