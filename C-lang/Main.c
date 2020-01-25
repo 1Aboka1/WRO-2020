@@ -26,33 +26,49 @@ int FrontCalibrate(){
 //This procedure directs robot to a startPosition that is right before a centre of field
 void startPosition(){
 	time1[T1] = 0;
-	while(time1[T1] < 600){
+	while(time1[T1] < 300 && irSeeker.dcDirection == 0){
 		readSensor(&irSeeker);
-		OmniDrive(FrontCalibrate(), -1000, 0);
+		readSensor(&compass);
+		OmniDrive(FrontCalibrate(), -100, 0);
 	}
 	time1[T1] = 0;
 	while(time1[T1] < 4000 && getUSDistance(S4) != 255 && irSeeker.dcDirection == 0){
 		readSensor(&irSeeker);
-		OmniDrive(FrontCalibrate(), 0, -1000);
+		readSensor(&compass);
+		OmniDrive(FrontCalibrate(), -100, -100);
 	}
 	time1[T1] = 0;
-	while(time1[T1] < 3500 && irSeeker.dcDirection == 0){
+	while(time1[T1] < 200 && irSeeker.dcDirection == 0){
 		readSensor(&irSeeker);
-		OmniDrive(FrontCalibrate(), -1000, 0);
+		readSensor(&compass);
+		OmniDrive(FrontCalibrate(), 0, 100);
+	}
+	time1[T1] = 0;
+	while(time1[T1] < 2500 && irSeeker.dcDirection == 0){
+		readSensor(&irSeeker);
+		readSensor(&compass);
+		OmniDrive(FrontCalibrate(), -100, 0);
 	}
 	time1[T1] = 0;
 	while(time1[T1] < 2000 && irSeeker.dcDirection == 0){
 		readSensor(&irSeeker);
-		OmniDrive(FrontCalibrate(), 100, 70);
+		readSensor(&compass);
+		OmniDrive(FrontCalibrate(), 100, 90);
 	}
 	OmniDrive(0, 0, 0);
+	time1[T1] = 0;
 	while(irSeeker.dcDirection == 0){
 		readSensor(&irSeeker);
-		continue;
+		readSensor(&compass);
+		if(time1[T1] > 3000)
+			startPosition();
 	}
 }
 
 void wallCalibrate(){
+	time1[T1] = 0;
+	while(time1[T1] < 500)
+		OmniDrive(FrontCalibrate(), 100, 0);
 	if(getUSDistance(S4) > 0 && getUSDistance(S4) < 65){
 		while(getUSDistance(S4) > 0 && getUSDistance(S4) < 65 && irSeeker.dcDirection == 5){
 			readSensor(&irSeeker);
@@ -68,7 +84,7 @@ void wallCalibrate(){
 	else{
 		while(irSeeker.dcDirection == 5){
 			readSensor(&irSeeker);
-			OmniDrive(FrontCalibrate(), 1000, 0);
+			OmniDrive(FrontCalibrate(), 100, 0);
 		}
 	}
 }
@@ -77,7 +93,7 @@ task main()
 {
 	initSensor(&irSeeker, S3);
 	initSensor(&compass, S1);
-	compass.offset = 310;
+	compass.offset = 300;
 
 	//Main loop
 	while(true){
@@ -417,5 +433,5 @@ task main()
 
 
 
-//This code and this project is a private property of Жайров Абулхаир 29.08.2005
+//This code and this project is a private property of ?ae?ia Aaoeoae? 29.08.2005
 //Made by 1AbokA1

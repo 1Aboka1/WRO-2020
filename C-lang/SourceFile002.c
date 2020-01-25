@@ -20,18 +20,20 @@ void OmniDrive(int side, int frontback, int turn){
 
 int FrontCalibrate(){
 	readSensor(&compass);
-	displayTextLine(2, "%4d", compass.relativeHeading);
-	return compass.relativeHeading * (-1);
+	return compass.relativeHeading * (-5);
 }
 
 task main()
 {
 	initSensor(&irSeeker, S3);
 	initSensor(&compass, S1);
-	compass.offset = 288;
+	compass.offset = 310;
 
-	while(true)
-		OmniDrive(FrontCalibrate(), 0, 0);
+	while(true){
 
+		readSensor(&compass);
+		OmniDrive(FrontCalibrate(), 0, 100);
+
+	}
 
 }
